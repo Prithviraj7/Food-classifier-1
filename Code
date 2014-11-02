@@ -1,0 +1,95 @@
+import matplotlib.pylab as pl
+import numpy as np
+import scipy as s
+import scipy.optimize as opt
+def sig(X):
+    den = 1 + np.exp**(-X)
+    d=1.0/den
+    return d
+
+
+
+def cost(y,thetas,x):
+    z=sig(np.dot(thetas,x))
+    j=-(np.dot(y , np.log(z)) + np.dot((1-y), (np.log(1-z))))
+    return j.mean()
+    
+    
+def grad (y,thetas,x):
+    z=sig(np.dot(thetas,x))
+    error =  z-y
+    return np.dot(error,x)/y.size
+    
+    
+    
+    
+    
+feature=s.genfromtxt("C:\Users\PRITHVIRAJ\Desktop\classification\\food.txt")
+
+feature_names=s.genfromtxt("C:\Users\PRITHVIRAJ\Desktop\classification\\fe.txt")
+target=s.genfromtxt("C:\Users\PRITHVIRAJ\Desktop\classification\\tar.txt")
+tarname=s.genfromtxt("C:\Users\PRITHVIRAJ\Desktop\classification\\tarname.txt")
+for t,marker,c in zip(xrange(3),">ox","rgb"):
+    pl.scatter(feature[target==t,2],
+               feature[target==t,0],
+               marker=marker,
+               c=c)
+
+
+
+    
+cal=[]
+carb=[]
+sod=[]               
+for x in feature:
+     cal.append(x[0])
+     carb.append(x[1])
+     sod.append(x[2])
+     
+is_sweet=[]
+for c in target:
+    if(c==0):
+        is_sweet.append(1)
+    else:
+        is_sweet.append(0)
+    
+is_bitter=[]
+for b in target:
+    if(b==2):
+        is_bitter.append(1)
+    else:
+        is_bitter.append(0) 
+is_salty=[]
+for w in target:
+    if(w==1):
+        is_salty.append(1)
+    else:
+        is_salty.append(0) 
+        
+bitcal=[]
+h=0
+for n in is_bitter:
+    if(n==1):
+        bitcal.append(cal[h])
+    h+=1    
+print "below "+ str(max(bitcal)) + " calories almost everything is bitter"
+feature = feature[:,[0,2]]
+print feature   
+best_acc=-1  
+for f in xrange(feature.shape[1]):
+    thresh=feature[:,f].copy()
+    thresh.sort()
+    print thresh
+    for t in thresh:
+        pred=(feature[:,f]>t)
+        print pred
+        el=[]
+        acc=(pred==is_salty).mean()
+        print "______________________"
+        print acc
+        if acc>best_acc:
+            best_acc=acc
+            best_fi=f
+            best_t=t
+print best_fi,best_t        
+pl.show()               
